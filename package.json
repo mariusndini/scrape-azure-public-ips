@@ -1,0 +1,25 @@
+{
+  "name": "scrape-azure-public-ips",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mariusndini/scrape-azure-public-ips.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mariusndini/scrape-azure-public-ips/issues"
+  },
+  "homepage": "https://github.com/mariusndini/scrape-azure-public-ips#readme",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.3",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.6",
+    "snowflake-sdk": "^1.5.2"
+  }
+}
