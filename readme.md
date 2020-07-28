@@ -13,6 +13,10 @@ In order for Power BI to be given the access to read data within the Snowflake e
 
 All Azure IP Addresses are updated on a weekly basis per MS Azure documentation below (therefore PowerBI service IPs are also updated weekly as well). The IPs are given a week lead time prior to being used. Within Snowflake these IPs will have to be allow-listed one week prior for the following weeks IP update.
 
+## Who Does This Affect?
+This affects anyone using <b>Snowflake Network Policies</b> in conjunction with any Azure service with dynamic and periodically changing IPs. At the time of this writing this is primarly aimed at PowerBI cloud services.
+
+
 ### Node.js Web Scrape Process
 The code provided in the <b>index.js</b> file does the following as described below. I will be detailing all the possible places this code could break (it is alot). If there any changes to the MS Azure Website this process will break and will need to be updated.
 
@@ -39,6 +43,16 @@ return rp(url) // step 1
   console.log(err);
 })
 ```
+
+#### The Following Node libs are used
+cheerio https://www.npmjs.com/package/cheerio
+
+request (deprecated) https://www.npmjs.com/package/request
+
+request-promise (deprecated) https://www.npmjs.com/package/request-promise
+
+snowflake-sdk https://www.npmjs.com/package/snowflake-sdk
+
 
 ### This Logic/code is Error Prone
 Step 1 assumes that the URL to the MS Azure envrionment will not change - with web pages this is never a guarentee.
