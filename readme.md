@@ -1,5 +1,5 @@
 ## Azure Public IP Web Scrape for Allow - Listing
-<p style='color:red'>PLEASE NOTE - THIS IS A UNSUPPORTED AND UNRELIABLE FOR LONG DURATIONS - USE AT YOUR OWN DISCRETION</p>
+<p style='background-color:red'>PLEASE NOTE - THIS IS A UNSUPPORTED AND UNRELIABLE FOR LONG DURATIONS - USE AT YOUR OWN DISCRETION</p>
 
 
 This document details allow-listing PowerBI cloud services IPs through Snowflake Network Policies in an automated fashion. Please note - this is a kludgy and hack way to accomplish this task. The only other option to date is to do this manually on a weekly basis when the IPs change. 
@@ -40,7 +40,7 @@ return rp(url) // step 1
 })
 ```
 
-#### Error Prone
+### This Logic/code is Error Prone
 Step 1 assumes that the URL to the MS Azure envrionment will not change - with web pages this is never a guarentee.
 
 Step 2 assumes that the ID object for the URL will be <b>#c50ef285-c6ea-c240-3cc4-6c9d27067d6c</b>, this is not guarenteed. In fact it is almost certain when MS updates the website this will have a new ID.
