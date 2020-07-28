@@ -42,13 +42,17 @@ return rp(url) // step 1
 
 #### Error Prone
 Step 1 assumes that the URL to the MS Azure envrionment will not change - with web pages this is never a guarentee.
+
 Step 2 assumes that the ID object for the URL will be <b>#c50ef285-c6ea-c240-3cc4-6c9d27067d6c</b>, this is not guarenteed. In fact it is almost certain when MS updates the website this will have a new ID.
+
 Step 3 is same as step 2
 
 In short - <b>anytime</b> there is an update or a change to this website there is a near 100% chance that the above script will need be updated.
 
 ### Saving IPs to Snowflake
 With the code above we can add Snowflake into the mix and by doing so we can save the JSON output into a Snowflake variant table to write a stored procedure to iterate thru the IPs and white list the ones we are interested in.
+
+Following this process also offers the advantage that should the Javascript fail to retrieve the JSON IP values - they may be manually inserted into Snowflake and the process can continue.
 
 ```javascript
 const rp = require('request-promise');
@@ -97,5 +101,64 @@ return rp(url)
 })
 ```
 
+### Snowflake Stored Procedure
+Once the IPs are in Snowflake you are able to to access them thru SQL
+```SQL
+select VALUE::STRING
+from AZURE.IP.IP_TABLE,
+     lateral flatten( input => IP:values[3].properties.addressPrefixes);
 
+Output Values:
+1  13.72.105.31/32
+2  13.72.105.76/32
+3  13.93.176.195/32
+4  13.93.176.215/32
+..   ...
+```
+
+The following stored procedure can be used to get the SQL to create the network policy combined w/ the SQL above. At the time of this writing the Stored Procedure must have <b>EXECUTE AS CALLER</B> otherwise it will error out. The caller of the procedure therefore must have the rights and ability to create network policies on behalf of the account.
+
+
+```SQL
+CREATE or replace PROCEDURE AZURE.IP.ALLOW()
+  RETURNS VARCHAR
+  LANGUAGE javascript
+  EXECUTE AS CALLER
+  AS
+$$
+  var IP_TO_Allow = snowflake.execute( { sqlText: 
+      ` select VALUE::STRING
+        from AZURE.IP.IP_TABLE,
+        lateral flatten( input => IP:values[3].properties.addressPrefixes) `} );
+    
+    var IP_CONCAT = '';
+    while ( IP_TO_Allow.next()){
+      var IP_CONCAT = IP_CONCAT + ` '${IP_TO_Allow.getColumnValue(1)}', `;
+    }
+    
+    IP_CONCAT = IP_CONCAT.replace(/,\s*$/, ""); // remove trailing comma
+    snowflake.execute( { sqlText: `create or replace network policy AZURE_POLICY allowed_ip_list=( ${IP_CONCAT})` } );
+
+    return `create or replace network policy AZURE_POLICY allowed_ip_list=( ${IP_CONCAT})`;
+$$;
+
+call AZURE.IP.ALLOW();
+```
+
+#### This code and everything documented here is provided as-is and is not guarnteed to work long term (if at all). It is purely for documentation purposes.
+
+## Other Resources/Blogs to Consider
+Below are othe resources found in researching this topic that others have attempted to solve this problem
+
+Securely using Power BI with Snowflake
+https://www.linkedin.com/pulse/securely-using-power-bi-snowflake-bryan-meier/
+
+MS Service Tag IPs 
+https://www.microsoft.com/en-us/download/details.aspx?id=56519
+
+Programmatically add Power BI Service IP addresses to whitelist? 
+https://community.powerbi.com/t5/Service/Programmatically-add-Power-BI-Service-IP-addresses-to-whitelist/td-p/533000
+
+Puplic IP of Power BI Service during Dataset Refersh using new Snowflake Connector 
+https://community.powerbi.com/t5/Service/Puplic-IP-of-Power-BI-Service-during-Dataset-Refersh-using-new/td-p/991110
 
