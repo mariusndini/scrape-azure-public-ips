@@ -1,5 +1,6 @@
 ## Azure Public IP Web Scrape for Allow - Listing
-<p style='background-color:red'>PLEASE NOTE - THIS IS A UNSUPPORTED AND UNRELIABLE FOR LONG DURATIONS - USE AT YOUR OWN DISCRETION</p>
+
+#### PLEASE NOTE - THIS IS A UNSUPPORTED AND UNRELIABLE - USE AT YOUR OWN DISCRETION - FOR DOCUMENTATION PURPOSES ONLY
 
 
 This document details allow-listing PowerBI cloud services IPs through Snowflake Network Policies in an automated fashion. Please note - this is a kludgy and hack way to accomplish this task. The only other option to date is to do this manually on a weekly basis when the IPs change. 
